@@ -2,10 +2,13 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const swaggerUi = require('swagger-ui-express');
+const fs = require('fs');
+const swaggerDocument = JSON.parse(fs.readFileSync('./swagger.json'));
 
 // Routes
 const mechanicRoutes = require('./routes/mechanics');
-const serviceRoutes = require('./routes/services');
+
 
 const app = express();
 
@@ -15,7 +18,8 @@ app.use(express.json());
 
 // Routes
 app.use('/api/mechanics', mechanicRoutes);
-app.use('/api/services', serviceRoutes);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGODB_URI)

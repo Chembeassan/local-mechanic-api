@@ -1,4 +1,4 @@
-const { body, param } = require('express-validator');
+const { body, validationResult } = require('express-validator');
 
 exports.validateMechanic = [
   body('name').trim().notEmpty().withMessage('Name is required'),
@@ -15,7 +15,15 @@ exports.validateMechanic = [
   body('hourlyRate')
     .optional()
     .isFloat({ min: 0 })
-    .withMessage('Hourly rate cannot be negative')
+    .withMessage('Hourly rate cannot be negative'),
+  // ✅ ADD THIS FINAL FUNCTION TO HANDLE ERRORS
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    next();
+  }
 ];
 
 exports.validateService = [
@@ -30,5 +38,13 @@ exports.validateService = [
   body('duration')
     .optional()
     .isFloat({ min: 0.5 })
-    .withMessage('Minimum duration is 0.5 hours')
+    .withMessage('Minimum duration is 0.5 hours'),
+  // ✅ SAME HERE
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    next();
+  }
 ];
